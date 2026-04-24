@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>포인트 계산기 (쏘가리 / 배스)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 카드 */
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    width: 350px;
+}
+
+/* 제목 */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 섹션 */
+.section {
+    margin-bottom: 25px;
+}
+
+/* 입력 */
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-top: 8px;
+}
+
+/* 버튼 */
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #4facfe;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: #007bff;
+}
+
+/* 결과 */
+.result {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 구분 색 */
+.soga { color: #007bff; }
+.bass { color: #28a745; }
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🎣 포인트 계산기</h1>
+
+    <!-- 쏘가리 -->
+    <div class="section">
+        <label>쏘가리 길이</label>
+        <input type="number" id="soga" step="0.5" placeholder="예: 32.5">
+        <div id="result_soga" class="result soga"></div>
+    </div>
+
+    <!-- 배스 -->
+    <div class="section">
+        <label>배스 길이</label>
+        <input type="number" id="bass" step="0.5" placeholder="예: 35">
+        <div id="result_bass" class="result bass"></div>
+    </div>
+
+    <button onclick="calculateAll()">전체 계산</button>
+</div>
+
+<script>
+// 🔒 공통 데이터 (필요시 각각 따로도 가능)
+const data = [
+    {l:30, p:386},{l:30.5, p:407},{l:31, p:429},{l:31.5, p:451},
+    {l:32, p:475},{l:32.5, p:499},{l:33, p:523},{l:33.5, p:549},
+    {l:34, p:576},{l:34.5, p:603},{l:35, p:631},{l:35.5, p:661},
+    {l:36, p:691},{l:36.5, p:722},{l:37, p:754},{l:37.5, p:787},
+    {l:38, p:821},{l:38.5, p:856},{l:39, p:892},{l:39.5, p:929},
+    {l:40, p:967},{l:40.5, p:1006},{l:41, p:1046},{l:41.5, p:1088},
+    {l:42, p:1130},{l:42.5, p:1173},{l:43, p:1218},{l:43.5, p:1264},
+    {l:44, p:1311},{l:44.5, p:1359},{l:45, p:1409},{l:45.5, p:1459},
+    {l:46, p:1511},{l:46.5, p:1564},{l:47, p:1619},{l:47.5, p:1674},
+    {l:48, p:1731},{l:48.5, p:1790},{l:49, p:1849},{l:49.5, p:1910},
+    {l:50, p:1973},{l:50.5, p:2036},{l:51, p:2102},{l:51.5, p:2168},
+    {l:52, p:2236},{l:52.5, p:2305},{l:53, p:2376},{l:53.5, p:2449},
+    {l:54, p:2523},{l:54.5, p:2598},{l:55, p:2675},{l:55.5, p:2753},
+    {l:56, p:2833},{l:56.5, p:2915},{l:57, p:2998},{l:57.5, p:3083},
+    {l:58, p:3169},{l:58.5, p:3257},{l:59, p:3347},{l:59.5, p:3438},
+    {l:60, p:3531},{l:60.5, p:3626},{l:61, p:3722},{l:61.5, p:3820},
+    {l:62, p:3920},{l:62.5, p:4022},{l:63, p:4125},{l:63.5, p:4231},
+    {l:64, p:4338},{l:64.5, p:4446},
+];
+
+// 🔍 근사값 찾기
+function findPoint(length) {
+    let closest = data[0];
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].l <= length) {
+            closest = data[i];
+        } else {
+            break;
+        }
+    }
+    return closest.p;
+}
+
+// 🎯 쏘가리 계산식
+function calcSoga(length) {
+    if (length >= 30) return (findPoint(length) * 1.5).toFixed(1);
+    if (length >= 25) return 350;
+    if (length >= 20) return 250;
+    return "조건 미달";
+}
+
+// 🎯 배스 계산식 (※ 필요시 다르게 수정 가능)
+function calcBass(length) {
+    // 👉 여기만 엑셀 수식에 맞게 수정하면 됩니다
+    if (length >= 30) return (findPoint(length) ).toFixed(1); // 
+    if (length >= 25) return 300;
+    return "조건 미달";
+}
+
+// 🚀 전체 계산
+function calculateAll() {
+    const sogaVal = parseFloat(document.getElementById("soga").value);
+    const bassVal = parseFloat(document.getElementById("bass").value);
+
+    if (!isNaN(sogaVal)) {
+        document.getElementById("result_soga").innerText =
+            "쏘가리 결과: " + calcSoga(sogaVal);
+    }
+
+    if (!isNaN(bassVal)) {
+        document.getElementById("result_bass").innerText =
+            "배스 결과: " + calcBass(bassVal);
+    }
+}
+
+// ⚡ 입력 즉시 자동 계산
+["soga", "bass"].forEach(id => {
+    document.getElementById(id).addEventListener("input", function() {
+        calculateAll();
+    });
+});
+</script>
+
+</body>
+</html>
