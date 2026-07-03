@@ -1,0 +1,11 @@
+score_web.db
+score_web.db-shm
+score_web.db-wal
+*.bak*
+*.csv
+__pycache__/
+.agents/
+.codex/
+.venv/
+venv/
+*.pyc
