@@ -13,7 +13,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "score_web.db"
+DATA_DIR = Path(os.environ.get("DATA_DIR", BASE_DIR))
+DB_PATH = Path(os.environ.get("SCORE_DB_PATH", DATA_DIR / "score_web.db"))
 LEGACY_MATCH_FILE = BASE_DIR / "match_scores.csv"
 
 app = FastAPI(title="대회 종합성적 웹 관리")
@@ -149,6 +150,7 @@ def is_blank_row(row: dict[str, Any]) -> bool:
 
 
 def db() -> sqlite3.Connection:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
@@ -258,6 +260,11 @@ def legacy_import_if_needed() -> None:
 def startup() -> None:
     init_db()
     legacy_import_if_needed()
+
+
+@app.get("/healthz")
+def healthz() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 def stored_points(row: dict[str, Any]) -> int:

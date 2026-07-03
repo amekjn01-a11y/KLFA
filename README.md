@@ -1,26 +1,38 @@
 # KLFA Score Manager
 
-FastAPI + SQLite 기반 대회 성적 관리 웹앱입니다.
+FastAPI + SQLite based tournament score manager.
 
-## 포함된 파일
+## Files
 
-- `score_web_app.py`: 웹앱 본체
-- `score_manager_app.py`: 같은 `score_web.db`를 사용하는 데스크톱 앱
-- `requirements_web.txt`: Python 패키지 목록
-- `start_score_web.bat`: Windows 로컬 실행용
-- `Procfile`: 서버 배포용 실행 명령
+- `score_web_app.py`: Web app
+- `score_manager_app.py`: Desktop app that reads the same `score_web.db`
+- `requirements_web.txt`: Python dependencies
+- `start_score_web.bat`: Windows local start script
+- `Procfile`: Generic web process command
+- `render.yaml`: Render deployment configuration
 
-## 로컬 실행
+## Local Run
 
 ```bash
 python -m pip install -r requirements_web.txt
 python -m uvicorn score_web_app:app --host 0.0.0.0 --port 8000
 ```
 
-브라우저에서 `http://127.0.0.1:8000/`로 접속합니다.
+Open `http://127.0.0.1:8000/`.
 
-## 데이터 파일
+## Render Deployment
 
-실제 대회 데이터는 `score_web.db`에 저장됩니다. 이 파일은 개인정보와 실제 성적을 포함할 수 있으므로 GitHub에는 올리지 않습니다.
+1. Push this repository to GitHub.
+2. In Render, create a new Blueprint or Web Service from the GitHub repository.
+3. Use these settings if entering them manually:
+   - Build Command: `pip install -r requirements_web.txt`
+   - Start Command: `python -m uvicorn score_web_app:app --host 0.0.0.0 --port $PORT`
+   - Health Check Path: `/healthz`
+   - Environment Variable: `DATA_DIR=/var/data`
+4. Add a persistent disk mounted at `/var/data` so `score_web.db` is not lost after redeploys.
 
-운영 서버에 배포할 때는 GitHub에서 코드를 받은 뒤, 기존 `score_web.db`를 서버 폴더에 별도로 복사해서 사용합니다.
+## Data
+
+The live score data is stored in `score_web.db`.
+
+Do not commit `score_web.db`, CSV files, or backup files to GitHub. They may contain real tournament data. Copy `score_web.db` to the server data folder separately when moving existing data to production.

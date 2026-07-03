@@ -9,3 +9,6 @@ __pycache__/
 .venv/
 venv/
 *.pyc
+deploy_test_data/
+KLFA_github_upload.zip
+KLFA_github_upload/

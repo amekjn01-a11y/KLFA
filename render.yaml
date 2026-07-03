@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: klfa-score-manager
+    runtime: python
+    buildCommand: pip install -r requirements_web.txt
+    startCommand: python -m uvicorn score_web_app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: klfa-data
+      mountPath: /var/data
+      sizeGB: 1
